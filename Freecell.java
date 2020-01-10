@@ -2,11 +2,15 @@ import java.util.*;
 
 public class Freecell {
   public static void main(String[] args) {
+    Scanner input = new Scanner(System.in);
+
     ArrayList<Card> cards = new ArrayList<>(52);
+
     ArrayList<Card> pileC = new ArrayList<>();
     ArrayList<Card> pileD = new ArrayList<>();
     ArrayList<Card> pileH = new ArrayList<>();
     ArrayList<Card> pileS = new ArrayList<>();
+
     ArrayList<Card> column1 = new ArrayList<>();
     ArrayList<Card> column2 = new ArrayList<>();
     ArrayList<Card> column3 = new ArrayList<>();
@@ -55,34 +59,73 @@ public class Freecell {
     for(int i=46; i<52; ++i)
       column8.add(cards.get(i));
 
+    System.out.print("Pile C: ");
+    System.out.println(pileC);
+    System.out.print("Pile D: ");
+    System.out.println(pileD);
+    System.out.print("Pile H: ");
+    System.out.println(pileH);
+    System.out.print("Pile S: ");
+    System.out.println(pileS);
     System.out.print("Column 1: ");
     System.out.println(column1);
-
     System.out.print("Column 2: ");
     System.out.println(column2);
-
     System.out.print("Column 3: ");
     System.out.println(column3);
-
     System.out.print("Column 4: ");
     System.out.println(column4);
-
     System.out.print("Column 5: ");
     System.out.println(column5);
-
     System.out.print("Column 6: ");
     System.out.println(column6);
-
     System.out.print("Column 7: ");
     System.out.println(column7);
-
     System.out.print("Column 8: ");
     System.out.println(column8);
+    System.out.print("Column 9: ");
+    System.out.println(column9);
 
+    System.out.print("Enter (from ? to ?): ");
+    char in1 = input.next().charAt(0);
+    char in2 = input.next().charAt(0);
+    if(in1 == '1'){
+      if(in2 == 'c'){
+        move(column1, pileC);
+      }
+    }
+    System.out.print("Pile C: ");
+    System.out.println(pileC);
+    System.out.print("Pile D: ");
+    System.out.println(pileD);
+    System.out.print("Pile H: ");
+    System.out.println(pileH);
+    System.out.print("Pile S: ");
+    System.out.println(pileS);
+    System.out.print("Column 1: ");
+    System.out.println(column1);
+    System.out.print("Column 2: ");
+    System.out.println(column2);
+    System.out.print("Column 3: ");
+    System.out.println(column3);
+    System.out.print("Column 4: ");
+    System.out.println(column4);
+    System.out.print("Column 5: ");
+    System.out.println(column5);
+    System.out.print("Column 6: ");
+    System.out.println(column6);
+    System.out.print("Column 7: ");
+    System.out.println(column7);
+    System.out.print("Column 8: ");
+    System.out.println(column8);
     System.out.print("Column 9: ");
     System.out.println(column9);
   }
 
+  public static void move(ArrayList<Card> list1, ArrayList<Card> list2) {
+    list2.add(list1.get(list1.size()-1));
+    list1.remove(list1.size()-1);
+  }
 }
 
 class Card {
