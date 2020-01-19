@@ -10,8 +10,9 @@ public class Freecell {
     System.out.println("boards.get(1).get(4)         : " + b1.getBoards().get('1').get(4));
     System.out.println("boards.get(1).get(4).getPoint: " + b1.getBoards().get('1').get(4).getPoint());
 
-    choice(b1);
-    System.out.println(b1.toString());
+    //while(true){
+      choice(b1);
+    //}
   }
 
   public static void choice(Board b1) {
@@ -51,10 +52,18 @@ public class Freecell {
        numeric = false;
     }
     if(!numeric){
-      System.out.println("Invalid data entered!");
+      System.out.println("Invalid column number entered!");
       System.out.println(b1.toString());
-      choice(b1);
     }
+    else if(to != 'c' || to != 'd' || to != 'h' || to != 's' || to != '1' ||
+            to != '2' || to != '3' || to != '4' || to != '5' || to != '6' ||
+            to != '7' || to != '8' || to != '9'){
+      System.out.println("Invalid pile or column entered!");
+    }
+    else{
+      b1.get(t).put( b1.get(f).pop() );
+    }
+    choice(b1);
   }
 
   public static void move(Board b1, String f, String whatCard, String t){
@@ -71,10 +80,31 @@ public class Freecell {
        numeric = false;
     }
     if(!numeric){
-      System.out.println("Invalid data entered!");
+      System.out.println("Invalid column number entered!");
       System.out.println(b1.toString());
-      choice(b1);
     }
+    else if(to != 'c' || to != 'd' || to != 'h' || to != 's' || to != '1' ||
+            to != '2' || to != '3' || to != '4' || to != '5' || to != '6' ||
+            to != '7' || to != '8' || to != '9'){
+      System.out.println("Invalid pile or column entered!");
+    }
+    else if(whatCard.length() != 2 || !isElementOfCards()){
+      System.out.println("Invalid card entered!");
+    }
+    else{
+      b1.get(t).put( b1.get(f).get( b1.get(f).indexOf(whatCard) ) );
+    }
+    choice(b1);
+  }
+
+  public boolean isElementOfCards(Board b1, String c) {
+    boolean isCards = false;
+    for(int i=0; i<b1.getCards.size(); i++){
+      if(c.equals(b1.getCards.get(i).getName())){
+        isCards = true;
+      }
+    }
+    return isCards;
   }
 }
 
@@ -98,50 +128,12 @@ class Board {
   private ArrayList<Card> column9 = new ArrayList<>();
 
   public Board(){
-    // suit: spades(s), hearts (H), clubs (c), diamonds (d)
-    String[] suit = {"c","d","h","s"};
-    // face: number on the card
-    String[] face = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "X", "J", "Q", "K"};
-    for(int i=0; i<4; ++i){
-      for(int j=0; j<13; ++j){
-        String s = suit[i] + face[j];
-        Card c = new Card(s);
-        cards.add(c);
-      }
-    }
-
-    Collections.shuffle(cards); //shuffle the order of cards
-    for(int i=0; i<7; ++i)
-      column1.add(cards.get(i));
-    for(int i=7; i<14; ++i)
-      column2.add(cards.get(i));
-    for(int i=14; i<21; ++i)
-      column3.add(cards.get(i));
-    for(int i=21; i<28; ++i)
-      column4.add(cards.get(i));
-    for(int i=28; i<34; ++i)
-      column5.add(cards.get(i));
-    for(int i=34; i<40; ++i)
-      column6.add(cards.get(i));
-    for(int i=40; i<46; ++i)
-      column7.add(cards.get(i));
-    for(int i=46; i<52; ++i)
-      column8.add(cards.get(i));
-
-    boards.put('c', pileC);
-    boards.put('d', pileD);
-    boards.put('h', pileH);
-    boards.put('s', pileS);
-    boards.put('1', column1);
-    boards.put('2', column2);
-    boards.put('3', column3);
-    boards.put('4', column4);
-    boards.put('5', column5);
-    boards.put('6', column6);
-    boards.put('7', column7);
-    boards.put('8', column8);
-    boards.put('9', column9);
+    newBoard();
     toString();
+  }
+
+  public ArrayList<Card> getCards() {
+    return cards;
   }
 
   public void newBoard() {
@@ -160,6 +152,7 @@ class Board {
     column8.clear();
     column9.clear();
     if(boards.isEmpty()){
+      // suit: spades(s), hearts (H), clubs (c), diamonds (d)
       String[] suit = {"c","d","h","s"};
       // face: number on the card
       String[] face = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "X", "J", "Q", "K"};
