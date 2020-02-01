@@ -12,37 +12,46 @@ public class Freecell {
     }
 
     public static void command(Board b1) {
+        checkGameOver(b1);
         Scanner input = new Scanner(System.in);
         System.out.println();
         System.out.println(b1.toString());  //print current board
-        System.out.print("Command > ");
-        String strInput = input.nextLine();
-        // Separate the string input according to the spaces
-        String str[] = strInput.split(" ", 0);
-        if(str.length == 1) {
-            if(str[0].equals("r")) {
-                b1.newBoard();
+        try{
+            System.out.print("Command > ");
+            String strInput = input.nextLine();
+            // Separate the string input according to the spaces
+            String str[] = strInput.split(" ", 0);
+            if(str.length == 1) {
+                if(str[0].equals("r")) {
+                    b1.newBoard();
+                }
+                else if(str[0].equals("x")){
+                    System.exit(0);
+                }
+                else if(Integer.parseInt(str[0]) >= 1 && Integer.parseInt(str[0]) <= 9){
+                    colRotate(b1, str[0]);
+                }
+                else{
+                    System.out.println("No such instruction");
+                }
+                command(b1);
             }
-            else if(str[0].equals("x")){
-                System.exit(0);
+            else if(str.length == 2) {
+                move(b1, str[0], str[1]);
+                command(b1);
             }
-            else if(Integer.parseInt(str[0]) >= 1 && Integer.parseInt(str[0]) <= 9){
-                colRotate(b1, str[0]);
+            else if(str.length == 3){
+                move(b1, str[0], str[1], str[2].toLowerCase());
+                command(b1);
             }
             else{
-                System.out.println("No such instruction");
+                System.out.println("Invalid instruction entered.");
+                System.out.println("Try enter with the following format:-");
+                System.out.println("FROM WHICH COLUMN<space>WHICH CARD<space>TO WHICH COLUMN/PILE");
+                command(b1);
             }
-            command(b1);
         }
-        else if(str.length == 2) {
-            move(b1, str[0], str[1]);
-            command(b1);
-        }
-        else if(str.length == 3){
-            move(b1, str[0], str[1], str[2].toLowerCase());
-            command(b1);
-        }
-        else{
+        catch(NumberFormatException e){
             System.out.println("Invalid instruction entered.");
             System.out.println("Try enter with the following format:-");
             System.out.println("FROM WHICH COLUMN<space>WHICH CARD<space>TO WHICH COLUMN/PILE");
@@ -85,12 +94,43 @@ public class Freecell {
         if(!checkToFrom(b1, to, from)){
             command(b1);
         }
-        else{
+        else if(Character.isLetter(to.charAt(0))){
+            char toKey = to.charAt(0);
+            char fromKey = from.charAt(0);
+            System.out.println("inside isLetter");
+            int prevPoints = 0;;
+            if(b1.getBoards().get(toKey).isEmpty()) 
+                prevPoints = 0;
+            else{
+                prevPoints = getPoints(b1.getBoards().get(toKey).peek());
+                System.out.println("prevPoints  = " + prevPoints);
+            }
+            if(prevPoints + 1 == getPoints(b1.getBoards().get(fromKey).peek()) && 
+                b1.getBoards().get(fromKey).peek().charAt(0) == toKey &&
+                checkMultMove(b1, fromKey, toKey, 1)){
+                    System.out.println("checkMultMove = true");
+                    Stack<String> temp = new Stack<>();
+                    for(int i = 1; i>0; i--){
+                        temp.push(b1.getBoards().get(fromKey).pop());
+                    }
+                    for(int i = 1; i>0; i--){
+                        b1.getBoards().get(toKey).push(temp.pop());
+                    }
+            }
+            else{
+                System.out.println("Invalid check destination!");
+            }
+        }
+        else if(checkMultMove(b1, from.charAt(0), to.charAt(0), 1)){
             char toKey = to.charAt(0);
             char fromKey = from.charAt(0);
             b1.getBoards().get(toKey).push( b1.getBoards().get(fromKey).pop() );
+            command(b1);
         }
-        command(b1);
+        else{
+            System.out.println("Invalid destination!");
+        }
+        
     }
 
     public static void move(Board b1, String from, String whatCard, String to){
@@ -110,7 +150,28 @@ public class Freecell {
                     move(b1, from, to);
                 }
                 else{
-                    if(checkMultMove(b1, fromKey, toKey, fromSearch-1)){
+                    if(Character.isLetter(toKey)){
+                        System.out.println("inside isLetter");
+                        int prevPoints = 0;;
+                        if(b1.getBoards().get(toKey).isEmpty()) 
+                            prevPoints = 0;
+                        else{
+                            prevPoints = getPoints(b1.getBoards().get(toKey).peek());
+                        }
+                        if(prevPoints + 1 == getPoints(whatCard) && 
+                            whatCard.charAt(0) == toKey &&
+                            checkMultMove(b1, fromKey, toKey, fromSearch)){
+                                System.out.println("checkMultMove = true");
+                                Stack<String> temp = new Stack<>();
+                                for(int i = fromSearch; i>0; i--){
+                                    temp.push(b1.getBoards().get(fromKey).pop());
+                                }
+                                for(int i = fromSearch; i>0; i--){
+                                    b1.getBoards().get(toKey).push(temp.pop());
+                                }
+                        }
+                    }
+                    else if(checkMultMove(b1, fromKey, toKey, fromSearch)){
                         System.out.println("checkMultMove = true");
                         Stack<String> temp = new Stack<>();
                         for(int i = fromSearch; i>0; i--){
@@ -121,7 +182,7 @@ public class Freecell {
                         }
                     }
                     else{
-                        System.out.println("checkMultMove = false");    //change errror message
+                        System.out.println("checkMultMove = false");    //change error message
                     }
                     
                 }
@@ -130,18 +191,31 @@ public class Freecell {
             command(b1);
         }
     }
-
+    
+    //check to pile c/s/d/h
     public static boolean checkMultMove(Board b1, char from, char to, int searchIndex){
-        int current = b1.getBoards().get(from).size() - searchIndex - 1;
+        int current = b1.getBoards().get(from).size() - searchIndex;
+        System.out.println("check: " + b1.getBoards().get(from).get(current));
         for(int i=current; i<b1.getBoards().get(from).size() - 1; i++){
             if(getPoints(b1.getBoards().get(from).get(i)) - getPoints(b1.getBoards().get(from).get(i + 1)) != 1){
+                System.out.println(b1.getBoards().get(from).get(i) + " and " + b1.getBoards().get(from).get(i + 1) + "not following order!");
                 return false;
             }
         }
+        //error checking , delete later
+        System.out.println("check: " + b1.getBoards().get(from).get(current));
+        if(b1.getBoards().get(to).size() != 0){
+            System.out.println("to.peek()'s points : " + getPoints(b1.getBoards().get(to).peek()));
+        }
+        else{
+            System.out.println("to.peek()'s points : 0");
+        }
+        System.out.println("current's points : " + getPoints(b1.getBoards().get(from).get(current)));
+        //until here
         if(b1.getBoards().get(to).size() == 0){
             return true;
         }
-        else if(getPoints(b1.getBoards().get(from).get(current)) == getPoints(b1.getBoards().get(to).peek()) - 1){
+        else if(getPoints(b1.getBoards().get(to).peek()) - getPoints(b1.getBoards().get(from).get(current)) == 1){
             return true;
         }
         else{
@@ -150,8 +224,51 @@ public class Freecell {
         }
     }
 
+    public static void checkGameOver (Board b1) {
+        boolean gameOver = true;
+        char[] pileChar = {'c', 'd', 'h', 's'};
+        for(char c : pileChar) {
+            Stack<String> temp = b1.getBoards().get(c);
+            if(temp.isEmpty()){
+                gameOver = false;
+                break;
+            }
+            try{
+                for(int i=0; i<12; ++i){
+                    if(getPoints(temp.get(i)) != getPoints(temp.get(i+1)) - 1 ){
+                        gameOver = false;
+                    }
+                }
+            }
+            catch(EmptyStackException e){
+                gameOver = false;
+            }
+            catch(ArrayIndexOutOfBoundsException a){
+                gameOver = false;
+            }
+        }
+        if(gameOver) gameOverWords();
+    }
+
+    public static void gameOverWords(){
+        System.out.println("\n\n");
+        System.out.println("************************************************************************************************");
+        System.out.println("************************************************************************************************\n");
+        System.out.println(" ####   ####  #    #  ####  #####   ####  #####  ####   ## ##");
+        System.out.println("#    # #    # ##   # #    # #    # #    #   #   #    #  ## ##");
+        System.out.println("#      #    # # #  # #      #    # #    #   #    ##     ## ##");
+        System.out.println("#      #    # #  # # #  ### #####  ######   #      ##   ## ##");
+        System.out.println("#    # #    # #   ## #    # # #    #    #   #   #    #       ");
+        System.out.println(" ####   ####  #    #  ####  #  ### #    #   #    ####   ## ##");
+        System.out.println("\n************************************************************************************************");
+        System.out.println("************************************************************************************************");
+        System.out.println("\n\n");
+        System.out.println("You have finished the game!");
+        System.out.println("Goodbye");
+        System.exit(0);
+    }
+
     public static boolean isElementOfCards(Board b1, String c) {
-        System.out.println(c);
         if(b1.getCards().contains(c)) return true;
         else return false;
     }
