@@ -91,12 +91,13 @@ public class Freecell {
     }
 
     public static void move(Board b1, String from, String to){
+        char toKey = to.charAt(0);
+        char fromKey = from.charAt(0);
         if(!checkToFrom(b1, to, from)){
             command(b1);
         }
         else if(Character.isLetter(to.charAt(0))){
-            char toKey = to.charAt(0);
-            char fromKey = from.charAt(0);
+            
             System.out.println("inside isLetter");
             int prevPoints = 0;;
             if(b1.getBoards().get(toKey).isEmpty()) 
@@ -105,30 +106,21 @@ public class Freecell {
                 prevPoints = getPoints(b1.getBoards().get(toKey).peek());
                 System.out.println("prevPoints  = " + prevPoints);
             }
-            if(prevPoints + 1 == getPoints(b1.getBoards().get(fromKey).peek()) && 
-                b1.getBoards().get(fromKey).peek().charAt(0) == toKey &&
-                checkMultMove(b1, fromKey, toKey, 1)){
-                    System.out.println("checkMultMove = true");
-                    Stack<String> temp = new Stack<>();
-                    for(int i = 1; i>0; i--){
-                        temp.push(b1.getBoards().get(fromKey).pop());
-                    }
-                    for(int i = 1; i>0; i--){
-                        b1.getBoards().get(toKey).push(temp.pop());
-                    }
+            if(prevPoints - getPoints(b1.getBoards().get(fromKey).peek()) == -1 && 
+                b1.getBoards().get(fromKey).peek().charAt(0) == toKey){
+                    System.out.println("checkMultMove in 2move = true");
+                    b1.getBoards().get(toKey).push(b1.getBoards().get(fromKey).pop());
             }
             else{
                 System.out.println("Invalid check destination!");
             }
         }
-        else if(checkMultMove(b1, from.charAt(0), to.charAt(0), 1)){
-            char toKey = to.charAt(0);
-            char fromKey = from.charAt(0);
+        else if(checkMultMove(b1, fromKey, toKey, 1)){
             b1.getBoards().get(toKey).push( b1.getBoards().get(fromKey).pop() );
             command(b1);
         }
         else{
-            System.out.println("Invalid destination!");
+            System.out.println("Invalid final destination!");
         }
         
     }
@@ -159,16 +151,8 @@ public class Freecell {
                             prevPoints = getPoints(b1.getBoards().get(toKey).peek());
                         }
                         if(prevPoints + 1 == getPoints(whatCard) && 
-                            whatCard.charAt(0) == toKey &&
-                            checkMultMove(b1, fromKey, toKey, fromSearch)){
-                                System.out.println("checkMultMove = true");
-                                Stack<String> temp = new Stack<>();
-                                for(int i = fromSearch; i>0; i--){
-                                    temp.push(b1.getBoards().get(fromKey).pop());
-                                }
-                                for(int i = fromSearch; i>0; i--){
-                                    b1.getBoards().get(toKey).push(temp.pop());
-                                }
+                            whatCard.charAt(0) == toKey){
+                            b1.getBoards().get(toKey).push(b1.getBoards().get(fromKey).pop());
                         }
                     }
                     else if(checkMultMove(b1, fromKey, toKey, fromSearch)){
@@ -306,6 +290,7 @@ class Board {
         boards.clear();
         for(Stack<String> s : stacks)
         s.clear();
+        cards.clear();
 
         if(boards.isEmpty()){
             // suit: spades(s), hearts (H), clubs (c), diamonds (d)
