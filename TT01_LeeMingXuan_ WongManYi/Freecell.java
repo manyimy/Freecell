@@ -9,6 +9,9 @@ public class Freecell {
 	/**
 	* Prompt, check and process input command from user
 	*
+	* Method to prompt input from user and check if they are valid command.
+	* Proceeds by processing the command if is valid.
+	*
 	* @param b1 Game board
 	*/
 	public static void command(Board b1) {
@@ -90,6 +93,7 @@ public class Freecell {
 	/**
 	* Check source and destination
 	*
+	* Returns true only if source and destination of card movement is valid.
 	* Source can only be from column 1 to column 9.
 	* Nothing can be move from any pile.
 	* Destination should be valid pile or column.
@@ -128,8 +132,8 @@ public class Freecell {
 	/**
 	* Check if multiple cards movement follows rules
 	*
-	* If deck of cards starting from the specified card is one
-	* point larger than the next card or when destination column is empty.
+	* Check if deck of cards starting from the specified card is one
+	* points larger than the next card or when destination column is empty.
 	*
 	* @param b1 Game board
 	* @param from Source of card movement
@@ -167,8 +171,9 @@ public class Freecell {
 	/**
 	* Move last card from source stack to destination stack
 	*
-	* If the points of card is one point smaller and the suit matches the
-	* pile's suit when destination is a pile. When destination is a column.
+	* Method moves the last card from source column to destination if the points
+	* of card is one point smaller and the suit matches the pile's suit when
+	* destination is a pile. When destination is a column.
 	*
 	* @param b1 Game board
 	* @param from Source of card movement
@@ -212,8 +217,8 @@ public class Freecell {
 	/**
 	* Move deck of cards from source stack to destination stack
 	*
-	* Cards starting from the specified card till the end of the stack
-	* if the rules is followed will be moved. When destination is pile,
+	* Method moves the deck of cards starting from the specified card till the
+	* end of the stack if the rules is followed. IfWhen destination is pile,
 	* deck of cards is reversed to add into pile if they follows rules
 	*
 	* @param b1 Game board
@@ -569,6 +574,7 @@ class OrderedStack<E> extends Stack<E>{
 	/**
 	* Pushes an item onto the top of this stack.
 	*
+	* Pushes an item onto the top of this stack.
 	* This has exactly the same effect as addElement(item)
 	*
 	* @param card card
